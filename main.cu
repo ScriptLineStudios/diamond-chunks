@@ -9,7 +9,7 @@
 #define USE_CUDA
 
 #ifdef USE_CUDA
-    #define CUDA_FUNCTION inline __device__ //__forceinline__
+    #define CUDA_FUNCTION inline __device__ __host__ //__forceinline__
 #else
     #define CUDA_FUNCTION
 #endif
@@ -164,7 +164,7 @@ __global__ void kernel(uint64_t s, uint64_t *out) {
     const Offset *cmp = &offsets[0];
     #pragma unroll
     for (int i = 1; i < 6; i++) {
-        if (offset_distance_squared(cmp, (const Offset *)&offsets[i]) > 16.0) {
+        if (offset_distance_squared(cmp, (const Offset *)&offsets[i]) > 20.0) {
             return;
         }
     }
@@ -187,9 +187,9 @@ int main(int argc, char **argv) {
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
-    for (uint64_t chunk = seed_start; chunk < seed_end; chunk += 100) {
-        printf("Doing work from %lu to %lu\n", chunk, chunk + 100);
-        for (uint64_t s = chunk; s < chunk + 100; s++) {
+    for (uint64_t chunk = seed_start; chunk < seed_end; chunk += 1000) {
+        printf("Doing work from %lu to %lu\n", chunk, chunk + 1000);
+        for (uint64_t s = chunk; s < chunk + 1000; s++) {
             checked += blocks * threads;
             kernel<<<blocks, threads>>>(blocks * threads * s, buffer);
         }

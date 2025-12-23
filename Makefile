@@ -3,4 +3,4 @@ main: main.cu rng.cuh
 		--ftz=true --prec-div=false --prec-sqrt=false --fmad=true \
 		--extra-device-vectorization --restrict -lineinfo \
 		-Xcompiler "-O3,-march=native,-mtune=native,-ffast-math,-funroll-loops,-fomit-frame-pointer" \
-		main.cu -o main
+		main.cu -o build/main
