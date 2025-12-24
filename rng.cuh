@@ -114,9 +114,8 @@ typedef struct {
 } RNG; // Bruh I really didn't want to have to do this.
 
 CUDA_FUNCTION RNG rng_new() {
-    Xoroshiro xr;
     RNG rng;
-    rng.internal = xr;
+    rng.internal = {0};
     return rng;
 }
 
