@@ -19,11 +19,11 @@ typedef __align__(16) struct {
 } Offset;
 
 CUDA_FUNCTION Offset offset_new(int dx, int dz, int height) {
-    return {.dx=dx, .dz=dz, .height=height, .is_valid=true};
+    return {dx, dz, height, true};
 }
 
 CUDA_FUNCTION Offset offset_invalid_new() {
-    return {.dx=-1, .dz=-1, .height=-1, .is_valid=false};
+    return {-1, -1, -1, false};
 }
 
 CUDA_FUNCTION Offset get_position_standard(RNG *rng) {
