@@ -2,14 +2,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
-#include <time.h>
-#include <unistd.h>
-#include <sys/time.h>
 
 #define USE_CUDA
 
 #ifdef USE_CUDA
-    #define CUDA_FUNCTION inline __device__ __host__ //__forceinline__
+    #define CUDA_FUNCTION inline __device__ //__forceinline__
 #else
     #define CUDA_FUNCTION
 #endif
@@ -138,7 +135,6 @@ CUDA_FUNCTION bool get_buried_diamond_offsets(RNG *rng, uint64_t chunk_seed, Off
     return true;
 }
 
-unsigned long long int checked = 0;
 __managed__ unsigned long long int results = 0;
 
 __global__ void kernel(uint64_t s, uint64_t *out) {
@@ -173,6 +169,11 @@ __global__ void kernel(uint64_t s, uint64_t *out) {
 }
 
 int main(int argc, char **argv) {
+    if (argc <= 1) {
+        printf("Run with the following arguments: <start block> <end block>\n");
+        exit(1);
+    }
+
     const uint64_t seed_start = atoll(argv[1]);
     const uint64_t seed_end = atoll(argv[2]);
 
@@ -184,17 +185,13 @@ int main(int argc, char **argv) {
     uint64_t *buffer;
     cudaMallocManaged(&buffer, sizeof(uint64_t) * 640000); // I can't envision a world where this overflows...
 
-    struct timeval start, end;
-    gettimeofday(&start, NULL);
-
     for (uint64_t chunk = seed_start; chunk < seed_end; chunk += 1000) {
-        printf("Doing work from %lu to %lu\n", chunk, chunk + 1000);
+        printf("working on blocks %lu to %lu\n", chunk, chunk + 1000);
         for (uint64_t s = chunk; s < chunk + 1000; s++) {
-            checked += blocks * threads;
             kernel<<<blocks, threads>>>(blocks * threads * s, buffer);
         }
         cudaDeviceSynchronize();
-        printf("Found %llu results\n", results);
+        printf("\tfound %llu results\n", results);
         for (unsigned long long int i = 0; i < results; i++) {
             fprintf(output, "%lu\n", buffer[i]);
         }
@@ -203,11 +200,6 @@ int main(int argc, char **argv) {
     }
 
     fclose(output);
-    gettimeofday(&end, NULL);
-    double time_taken = end.tv_sec + end.tv_usec / 1e6 - start.tv_sec - start.tv_usec / 1e6;
-
-    printf("Searched %llu seeds\n", checked);
-    printf("%f/s\n", (double)checked/time_taken);
 
     return 0;
 }
