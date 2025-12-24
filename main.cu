@@ -193,7 +193,7 @@ int main(int argc, char **argv) {
         cudaDeviceSynchronize();
         printf("\tfound %llu results\n", results);
         for (unsigned long long int i = 0; i < results; i++) {
-            fprintf(output, "%lu\n", buffer[i]);
+            fprintf(output, "%llu\n", buffer[i]);
         }
         fflush(output);
         results = 0ull;   

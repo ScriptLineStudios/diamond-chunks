@@ -115,7 +115,8 @@ typedef struct {
 
 CUDA_FUNCTION RNG rng_new() {
     RNG rng;
-    rng.internal = {0};
+    Xoroshiro xr;
+    rng.internal = xr;
     return rng;
 }
 
