@@ -114,7 +114,10 @@ typedef struct {
 } RNG; // Bruh I really didn't want to have to do this.
 
 CUDA_FUNCTION RNG rng_new() {
-    return (RNG){.internal=(Xoroshiro){0}};
+    Xoroshiro xr;
+    RNG rng;
+    rng.internal = xr;
+    return rng;
 }
 
 CUDA_FUNCTION static void rng_set_seed(RNG *rng, uint64_t seed) {
